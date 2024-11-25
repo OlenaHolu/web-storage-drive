@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('fichero_tag', function (Blueprint $table) {
+        Schema::create('fichero_tags', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Fichero::class)->constrained()->onDelete('cascade');
             $table->foreignIdFor(Tag::class)->constrained()->onDelete('cascade');
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fichero_tag');
+        Schema::dropIfExists('fichero_tags');
     }
 };

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Fichero;
+use App\Models\Fichero_tag;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 
@@ -18,23 +19,24 @@ class TagController extends Controller
     }
 
     public function addTagToFile(Request $request)
-{
-    $request->validate([
-        'fichero_id' => 'required|exists:ficheroes,id',
-        'tag_id' => 'required|exists:tags,id',
-    ]);
+    {
+        $request->validate([
+            'fichero_id' => 'required|exists:ficheroes,id',
+            'tag_id' => 'required|exists:tags,id',
+        ]);
 
-    $ficheroId = $request->input('fichero_id');
-    $tagId = $request->input('tag_id');
+        // Verificar si la relación ya existe antes de crearla
+        $ficheroTagExists = Fichero_tag::where('fichero_id', $request->fichero_id)
+            ->where('tag_id', $request->tag_id)
+            ->exists();
 
-    $fichero = Fichero::findOrFail($ficheroId);
+        if (!$ficheroTagExists) {
+            Fichero_tag::create([
+                'fichero_id' => $request->fichero_id,
+                'tag_id' => $request->tag_id
+            ]);
+        }
 
-    if (!$fichero->tags->contains($tagId)) {
-        $fichero->tags()->attach($tagId);
+        return redirect()->back()->with('success', 'Etiqueta añadida correctamente.');
     }
-
-    return redirect()->back()->with('success', 'Etiqueta añadida correctamente.');
-}
-
-
 }

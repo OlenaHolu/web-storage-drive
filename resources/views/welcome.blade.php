@@ -39,6 +39,7 @@
                     <td>
                         <form method="POST" action="/tags/add-to-file/{{ $fichero->id }}">
                             @csrf
+                            <input type="hidden" name="fichero_id" value="{{ $fichero->id }}">
                             <select name="tag_id">
                                 <option value="" selected disabled>Seleccionar etiqueta</option>
                                 @foreach ($tags as $tag)
