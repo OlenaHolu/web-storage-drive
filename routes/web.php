@@ -12,7 +12,16 @@ use App\Http\Controllers\TagController;
 Route::get('/', function () {
     // mostrar solo ficheros que no están en papelera
     $ficheros = Fichero::where('is_trashed', false)->get();
-    return view('welcome')->with('ficheros', $ficheros);
+    $filesToShow = [];
+    $user = Auth::user();
+
+    foreach ($ficheros as $file) {
+        // Verificar si el usuario es el propietario del archivo
+        if ($file->user_id == $user->id) {
+            $filesToShow[] = $file; // Agregar el archivo al array
+        }
+    }
+    return view('welcome')->with('ficheros', $filesToShow);
 });
 
 Route::get('/trash', function () {
