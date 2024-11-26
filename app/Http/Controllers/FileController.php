@@ -12,6 +12,23 @@ use Illuminate\Support\Facades\Storage;
 class FileController extends Controller
 {
 
+    public function downloadFile(Fichero $fichero){
+        return Storage::download($fichero->path);
+    }
+
+    public function upload(Request $request)
+    {
+        $request->validate(['uploaded_files.*' => 'file']);
+        foreach ($request->file('uploaded_files') as $file) {
+            $fichero = new Fichero();
+            $fichero->path = $file->store();
+            $fichero->name = $file->getClientOriginalName();
+            $fichero->user_id = Auth::user()->id;
+            $fichero->save();
+        }
+        return redirect('/');
+    }
+
     public function delete_or_share(Request $request)
     {
         if ($request->action == 'delete') {
@@ -107,5 +124,22 @@ class FileController extends Controller
         $fichero->users()->detach($user->id);
 
         return redirect('/')->with('success', 'Has dejado de compartir el archivo exitosamente.');
+    }
+
+    public function deleteFromTrash(Fichero $file)
+    {
+        Storage::delete($file->path);
+        $file->delete();
+        return redirect('/trash');
+    }
+
+    public function restore(Fichero $file)
+    {
+        $originalPath = 'uploads/' . $file->name;
+        Storage::move($file->path, $originalPath);
+        $file->path = $originalPath;
+        $file->is_trashed = false;
+        $file->save();
+        return redirect('/trash');
     }
 }

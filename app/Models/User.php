@@ -48,6 +48,6 @@ class User extends Authenticatable
 
     public function sharedFiles()
 {
-    return $this->belongsToMany(Fichero::class, 'fichero_user')->withTimestamps();
+    return $this->belongsToMany(Fichero::class, 'fichero_user');
 }
 }
