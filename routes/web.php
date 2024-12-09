@@ -9,6 +9,7 @@ use App\Http\Controllers\TagController;
 
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/trash', [HomeController::class, 'trash']);
+Route::get('/storage', [HomeController::class, 'storage']);
 
 Route::post('/upload', [FileController::class, 'upload'])
     ->can('upload', Fichero::class);
@@ -29,6 +30,8 @@ Route::get('/search', [SearchController::class, 'search']);
 
 Route::post('/tags/add', [TagController::class, 'addTag']);
 Route::post('/tags/add-to-file/{file}', [TagController::class, 'addTagToFile']);
+Route::get('/tags/{tag_name}', [TagController::class, 'showFilesByTagName'])->name('tags.files');
+
 
 Route::get('/login', [AuthController::class, 'loginForm']);
 Route::post('/login', [AuthController::class, 'login']);

@@ -10,11 +10,17 @@ use Illuminate\Support\Facades\Storage;
 
 class Fichero extends Model
 {
-    public function size(){
-        return Storage::size($this->path);
+    public function size()
+    {
+        if (Storage::exists($this->path)) {
+            return Storage::size($this->path);
+        }
+
+        return 0; // Retornar 0 si el archivo no existe
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
@@ -27,6 +33,7 @@ class Fichero extends Model
 
     public function tags()
 {
-    return $this->belongsToMany(Tag::class);
+    return $this->belongsToMany(Tag::class, 'fichero_tags', 'fichero_id', 'tag_id');
 }
+
 }

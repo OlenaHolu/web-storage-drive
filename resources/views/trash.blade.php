@@ -24,7 +24,7 @@
                 <td>
                     <a href="/download/{{ $fichero->id }}" title="Descargar archivo">{{ $fichero->name }}</a>
                 </td>
-                <td>{{ $fichero->size() }}</td>
+                <td>{{ number_format($fichero->size() / (1024 * 1024), 2) }} MB</td>
                 <td>{{ $fichero->user->name }}</td>
                 <td>{{ $fichero->updated_at }}</td>
             </tr>

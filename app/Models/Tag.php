@@ -10,7 +10,8 @@ class Tag extends Model
 
     public function ficheros()
 {
-    return $this->belongsToMany(Fichero::class);
+    return $this->belongsToMany(Fichero::class, 'fichero_tags', 'tag_id', 'fichero_id');
 }
+
 
 }

@@ -39,4 +39,12 @@ class TagController extends Controller
 
         return redirect()->back()->with('success', 'Etiqueta añadida correctamente.');
     }
+
+    public function showFilesByTagName($tag_name)
+{
+    $tagNameDecoded = urldecode($tag_name);
+    $tag = Tag::where('name', $tagNameDecoded)->firstOrFail();
+    $ficheros = $tag->ficheros;
+    return view('tagsfiles', compact('ficheros', 'tag'));
+}
 }
