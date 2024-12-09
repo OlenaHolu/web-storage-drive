@@ -12,8 +12,10 @@ use Illuminate\Support\Facades\Storage;
 class FileController extends Controller
 {
 
-    public function downloadFile(Fichero $fichero){
+    public function downloadFile(Fichero $fichero)
+    {
         return Storage::download($fichero->path);
+        
     }
 
     public function upload(Request $request)
@@ -74,9 +76,9 @@ class FileController extends Controller
     public function share(Request $request)
     {
         $request->validate(['ficheros_ids' => 'required']);
-         // Obtener todos los usuarios excluyendo al usuario autenticado
-         $authUserId = Auth::id(); // Obtener el ID del usuario autenticado
-    $users = User::where('id', '!=', $authUserId)->get();
+        // Obtener todos los usuarios excluyendo al usuario autenticado
+        $authUserId = Auth::id(); // Obtener el ID del usuario autenticado
+        $users = User::where('id', '!=', $authUserId)->get();
         return view('share')
             ->with('ficheros', Fichero::find(array_keys($request->ficheros_ids)))
             ->with('users', $users);
@@ -141,5 +143,66 @@ class FileController extends Controller
         $file->is_trashed = false;
         $file->save();
         return redirect('/trash');
+    }
+    
+    public function preview(Fichero $fichero)
+{
+    if (!Storage::exists($fichero->path)) {
+        return redirect()->back()->with('error', 'El archivo no existe.');
+    }
+
+    $isTextFile = in_array(pathinfo($fichero->name, PATHINFO_EXTENSION), ['txt', 'md', 'log']); // Define extensiones de texto
+
+    if($isTextFile){
+        $content = Storage::get($fichero->path);
+        return view('preview', compact('fichero', 'content', 'isTextFile'));
+    }
+    else {
+        return response()->file(Storage::path($fichero->path));
+    }
+    
+}
+
+public function updateTextFile(Request $request, Fichero $fichero)
+{
+    $request->validate([
+        'content' => 'required|string',
+    ]);
+
+    if (!Storage::exists($fichero->path)) {
+        return redirect()->back()->with('error', 'El archivo no existe.');
+    }
+
+    Storage::put($fichero->path, $request->content);
+
+    return redirect()->route('ficheros.preview', $fichero->id);
+}
+
+    public function edit(Fichero $fichero)
+    {
+        return view('editFile', compact('fichero'));
+    }
+
+    public function update(Request $request, Fichero $fichero)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
+        ]);
+
+        // Actualizar nombre y descripción
+        $fichero->update([
+            'name' => $request->name,
+            'description' => $request->description,
+        ]);
+
+        // Actualizar tags
+        if ($request->has('tags')) {
+            $fichero->tags()->sync($request->tags);
+        }
+
+        return redirect('/');
     }
 }

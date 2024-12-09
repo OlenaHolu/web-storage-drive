@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('ficheroes', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('description')->nullable();
             $table->foreignIdFor(User::class);
             $table->string('path');
             $table->boolean('is_trashed')->default(false);

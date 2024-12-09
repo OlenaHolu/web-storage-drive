@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Storage;
 
 class Fichero extends Model
 {
+
+    protected $fillable = [
+        'name', 
+        'description'
+    ];
+
     public function size()
     {
         if (Storage::exists($this->path)) {

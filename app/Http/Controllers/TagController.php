@@ -15,7 +15,7 @@ class TagController extends Controller
             'tag_name' => 'required|string|max:255',
         ]);
         Tag::create(['name' => $request->tag_name]);
-        return redirect()->back()->with('success', 'Etiqueta añadida exitosamente');
+        return redirect()->back();
     }
 
     public function addTagToFile(Request $request)
@@ -37,7 +37,7 @@ class TagController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Etiqueta añadida correctamente.');
+        return redirect()->back();
     }
 
     public function showFilesByTagName($tag_name)
